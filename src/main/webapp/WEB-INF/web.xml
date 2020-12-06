@@ -4,4 +4,31 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+
+  <servlet>
+    <servlet-name>HallServlet</servlet-name>
+    <servlet-class>servlets.HallServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>HallServlet</servlet-name>
+    <url-pattern>/halls</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>HallCheckServlet</servlet-name>
+    <servlet-class>servlets.HallCheckServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>HallCheckServlet</servlet-name>
+    <url-pattern>/check</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>AccountServlet</servlet-name>
+    <servlet-class>servlets.AccountServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AccountServlet</servlet-name>
+    <url-pattern>/account</url-pattern>
+  </servlet-mapping>
 </web-app>

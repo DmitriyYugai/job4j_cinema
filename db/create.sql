@@ -4,7 +4,8 @@ DROP TABLE IF EXISTS accounts;
 CREATE TABLE IF NOT EXISTS accounts(
     id serial primary key,
     name TEXT,
-    phone TEXT
+    phone TEXT,
+    hall INTEGER UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS halls(

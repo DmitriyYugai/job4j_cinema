@@ -4,13 +4,15 @@ public class Account {
     private int id;
     private String name;
     private String phone;
+    private int hall;
 
     public Account() {
     }
 
-    public Account(String name, String phone) {
+    public Account(String name, String phone, int hall) {
         this.name = name;
         this.phone = phone;
+        this.hall = hall;
     }
 
     public int getId() {
@@ -35,5 +37,13 @@ public class Account {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public int getHall() {
+        return hall;
+    }
+
+    public void setHall(int hall) {
+        this.hall = hall;
     }
 }

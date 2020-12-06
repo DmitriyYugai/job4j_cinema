@@ -8,8 +8,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.Collection;
-import java.util.Properties;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.*;
 
 public class PsqlStore implements Store{
     private static final Logger LOGGER = LoggerFactory.getLogger(PsqlStore.class.getName());
@@ -19,7 +21,7 @@ public class PsqlStore implements Store{
     private PsqlStore() {
         Properties cfg = new Properties();
         try (BufferedReader io = new BufferedReader(
-                new FileReader("db.properties")
+                new FileReader("db_cinema.properties")
         )) {
             cfg.load(io);
         } catch (Exception e) {
@@ -50,16 +52,72 @@ public class PsqlStore implements Store{
 
     @Override
     public void save(Account account) {
-
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps1 =  cn.prepareStatement("INSERT INTO accounts(name, phone, hall) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
+             PreparedStatement ps2 =  cn.prepareStatement("UPDATE halls SET account_id=? WHERE row_column=?")
+        ) {
+            ps1.setString(1, account.getName());
+            ps1.setString(2, account.getPhone());
+            ps1.setInt(3, account.getHall());
+            ps1.execute();
+            try (ResultSet id = ps1.getGeneratedKeys()) {
+                if (id.next()) {
+                    account.setId(id.getInt(1));
+                }
+            }
+            ps2.setInt(1, account.getId());
+            ps2.setInt(2, account.getHall());
+            ps2.execute();
+        } catch (Exception e) {
+            LOGGER.error("Error during saving user", e);
+        }
     }
 
     @Override
     public Collection<Hall> findAllHalls() {
-        return null;
+        List<Hall> halls = new ArrayList<>();
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("SELECT * FROM halls ORDER BY row_column ASC")
+        ) {
+            try (ResultSet it = ps.executeQuery()) {
+                while (it.next()) {
+                    halls.add(new Hall(it.getInt("id"),
+                            it.getInt("row_column"),
+                            it.getInt("account_id"))
+                    );
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error during finding posts", e);
+        }
+        return halls;
     }
 
     @Override
-    public Hall findHallById() {
-        return null;
+    public Optional<Hall> findHallByRowCol(int rowCol) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement st = cn.prepareStatement(
+                     "select * from halls where row_column = ?")) {
+            st.setInt(1, rowCol);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(new Hall(
+                            rs.getInt("id"),
+                            rs.getInt("row_column"),
+                            rs.getInt("account_id")
+                    ));
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error during finding post by id", e);
+        }
+        return Optional.empty();
+    }
+
+    public static void main(String[] args) {
+        Store store = PsqlStore.instOf();
+        store.save(new Account("Dima", "123", 22));
+        System.out.println(store.findAllHalls());
+        System.out.println(store.findHallByRowCol(22).get());
     }
 }

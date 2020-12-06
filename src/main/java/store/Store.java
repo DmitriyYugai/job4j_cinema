@@ -2,14 +2,10 @@ package store;
 
 import models.Account;
 import models.Hall;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.Collection;
-import java.util.Properties;
+import java.util.Optional;
+
 
 public interface Store {
 
@@ -17,6 +13,6 @@ public interface Store {
 
     Collection<Hall> findAllHalls();
 
-    Hall findHallById();
+    Optional<Hall> findHallByRowCol(int rowCol);
 
 }

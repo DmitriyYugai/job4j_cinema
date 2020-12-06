@@ -8,7 +8,8 @@ public class Hall {
     public Hall() {
     }
 
-    public Hall(int rowColumn, int accountId) {
+    public Hall(int id, int rowColumn, int accountId) {
+        this.id = id;
         this.rowColumn = rowColumn;
         this.accountId = accountId;
     }
