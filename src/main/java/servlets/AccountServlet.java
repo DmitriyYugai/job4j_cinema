@@ -15,7 +15,11 @@ public class AccountServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Account account = new Gson().fromJson(req.getReader().readLine(), Account.class);
-        PsqlStore.instOf().save(account);
-        resp.sendRedirect("http://localhost:8080/cinema/index.html");
+        if (PsqlStore.instOf().findHallByRowCol(account.getHall()).get().getAccountId() == 0) {
+            PsqlStore.instOf().save(account);
+            resp.getWriter().print("success");
+            return;
+        }
+        resp.getWriter().print("fail");
     }
 }

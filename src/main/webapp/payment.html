@@ -56,7 +56,11 @@
             url: 'http://localhost:8080/cinema/account',
             data: JSON.stringify(account),
         }).done(function(data) {
-            alert('Место успешно забронировано');
+            if (data == 'success') {
+                alert('Место успешно забронировано');
+            } else {
+                alert('Выбранное вами место уже забронировано');
+            }
             window.location.href = 'http://localhost:8080/cinema/index.html';
         }).fail(function(err){
             alert(err);
