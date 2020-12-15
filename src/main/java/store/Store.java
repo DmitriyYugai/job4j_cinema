@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface Store {
 
-    void save(Account account);
+    boolean save(Account account);
 
     Collection<Hall> findAllHalls();
 

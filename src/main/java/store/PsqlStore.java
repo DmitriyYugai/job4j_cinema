@@ -51,26 +51,34 @@ public class PsqlStore implements Store {
 
 
     @Override
-    public void save(Account account) {
+    public boolean save(Account account) {
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps1 =  cn.prepareStatement("INSERT INTO accounts(name, phone, hall) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
-             PreparedStatement ps2 =  cn.prepareStatement("UPDATE halls SET account_id=? WHERE row_column=?")
+             PreparedStatement ps1 = cn.prepareStatement("select * from halls where row_column = ?");
+             PreparedStatement ps2 = cn.prepareStatement("INSERT INTO accounts(name, phone, hall) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
+             PreparedStatement ps3 = cn.prepareStatement("UPDATE halls SET account_id=? WHERE row_column=?")
         ) {
-            ps1.setString(1, account.getName());
-            ps1.setString(2, account.getPhone());
-            ps1.setInt(3, account.getHall());
-            ps1.execute();
-            try (ResultSet id = ps1.getGeneratedKeys()) {
+            ps1.setInt(1, account.getHall());
+            try (ResultSet rs = ps1.executeQuery()) {
+                if (rs.next() && rs.getInt("account_id") != 0) {
+                   return false;
+                }
+            }
+            ps2.setString(1, account.getName());
+            ps2.setString(2, account.getPhone());
+            ps2.setInt(3, account.getHall());
+            ps2.execute();
+            try (ResultSet id = ps2.getGeneratedKeys()) {
                 if (id.next()) {
                     account.setId(id.getInt(1));
                 }
             }
-            ps2.setInt(1, account.getId());
-            ps2.setInt(2, account.getHall());
-            ps2.execute();
+            ps3.setInt(1, account.getId());
+            ps3.setInt(2, account.getHall());
+            ps3.execute();
         } catch (Exception e) {
             LOGGER.error("Error during saving user", e);
         }
+        return true;
     }
 
     @Override
