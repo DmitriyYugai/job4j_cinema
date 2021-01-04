@@ -117,5 +117,5 @@
 ![Коллизия 7](img/usage/col7.PNG)<br><br>
 Как видно, в данной ситуации приложение отрабатывает корректно.
 ## Контакты
-Почта: studentnstu97@mail.ru<br>
+Почта: dmitry_yugay@mail.ru<br>
 Skype: live:.cid.9cdc925fb48220b4
