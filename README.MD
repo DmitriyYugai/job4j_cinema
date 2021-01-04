@@ -10,6 +10,7 @@
 ## Использованные технологии
 * Servlets
 * PostgreSQL
+* JDBC
 * Collections Framework
 * SLF4J и Log4j
 * Библиотека GSON
